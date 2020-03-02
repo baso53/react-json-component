@@ -14,7 +14,7 @@ NOTE: Currently only supports ES6 modules
 # Example
 ```tsx
 import * as React from 'react';
-import RecursiveProperty from 'react-json-component';
+import RecursiveComponent from 'react-json-component';
 
 const testJson = {
   "_id": "5bc32f3f5fbd8ad01f8265fd",
@@ -48,7 +48,11 @@ class App extends React.Component {
   public render() {
     return (
       <div className="App">
-          <RecursiveProperty property={testJson} propertyName="Root Property" excludeBottomBorder={false} rootProperty={true}/>
+          <RecursiveComponent
+            property={testJson}
+            propertyName="Root Property"
+            excludeBottomBorder={false}
+            rootProperty={true}/>
       </div>
     );
   }
@@ -66,8 +70,6 @@ class App extends React.Component {
     propertyNameProcessor={(name) => name + ": "} // function that processes property names, default: processes from camelCase to normal text
 />
 ```
-
-
 
 # Development
 - `git clone` or download this repository
