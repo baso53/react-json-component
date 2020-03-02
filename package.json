@@ -1,7 +1,7 @@
 {
   "name": "react-json-component",
   "main": "dist/RecursiveProperty.js",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "dependencies": {
     "react": "^16.13.0",
     "styled-components": "^5.0.1"
