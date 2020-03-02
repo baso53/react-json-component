@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import ExpandableProperty from './ExpandableProperty';
+import { camelCaseToNormal } from './utils';
 
 const RecursivePropertyContainer = styled.div`
   padding-top: 10px;
@@ -25,41 +26,46 @@ interface IterableObject {
 interface Props {
   property: number | string | boolean | IterableObject;
   propertyName: string;
-  rootProperty?: boolean;
   excludeBottomBorder: boolean;
+  emptyPropertyLabel?: string;
+  rootProperty?: boolean;
+  propertyNameProcessor?: (name: string) => string;
 }
 
-const RecursiveProperty: React.SFC<Props> = props => {
-  return(
+const RecursiveProperty: React.FC<Props> = props => {
+  return (
     <RecursivePropertyContainer excludeBottomBorder={props.excludeBottomBorder}>
-    {props.property ? (
-      typeof props.property === 'number' ||
-      typeof props.property === 'string' ||
-      typeof props.property === 'boolean' ? (
-        <React.Fragment>
-          <PropertyName>{camelCaseToNormal(props.propertyName)}: </PropertyName>
-          {props.property.toString()}
-        </React.Fragment>
-      ) : (
-        <ExpandableProperty title={camelCaseToNormal(props.propertyName)} expanded={!!props.rootProperty}>
-          {Object.values(props.property).map((property, index, { length }) => (
-            <RecursiveProperty
-              key={index}
-              property={property}
-              propertyName={Object.getOwnPropertyNames(props.property)[index]}
-              excludeBottomBorder={index === length - 1}
-            />
-          ))}
-        </ExpandableProperty>
-      )
-    ) : (
-      'Property is empty'
-    )}
-  </RecursivePropertyContainer>
+      {props.property ? (
+        typeof props.property === 'number' ||
+          typeof props.property === 'string' ||
+          typeof props.property === 'boolean' ? (
+            <React.Fragment>
+              <PropertyName>{props.propertyNameProcessor!(props.propertyName)}: </PropertyName>
+              {props.property.toString()}
+            </React.Fragment>
+          ) : (
+            <ExpandableProperty title={props.propertyNameProcessor!(props.propertyName)} expanded={!!props.rootProperty}>
+              {Object.values(props.property).map((property, index, { length }) => (
+                <RecursiveProperty
+                  key={index}
+                  property={property}
+                  propertyName={Object.getOwnPropertyNames(props.property)[index]}
+                  propertyNameProcessor={props.propertyNameProcessor}
+                  excludeBottomBorder={index === length - 1}
+                />
+              ))}
+            </ExpandableProperty>
+          )
+      ) : props.emptyPropertyLabel
+      }
+    </RecursivePropertyContainer>
   );
 }
 
-const camelCaseToNormal = (str: string) => 
-  str.replace(/([A-Z])/g, ' $1').replace(/^./, str2 => str2.toUpperCase());
+RecursiveProperty.defaultProps = {
+  emptyPropertyLabel: 'Property is empty',
+  excludeBottomBorder: false,
+  propertyNameProcessor: camelCaseToNormal
+};
 
 export default RecursiveProperty;
